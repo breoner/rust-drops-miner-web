@@ -10,9 +10,6 @@
 
   <header>
     <div class="logo-container">
-      <svg class="logo-icon" viewBox="0 0 24 24" width="32" height="32">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="currentColor"/>
-      </svg>
       <h1>Rust Drops Miner</h1>
     </div>
     <div class="status-badge">
@@ -22,6 +19,42 @@
   </header>
 
   <main>
+    <section class="timer-section">
+      <div class="timer-header">
+        <div class="timer-info">
+          <span class="timer-label">Кампания Rust Drops:</span>
+          <span id="campaignName" class="campaign-name">Поиск активных раундов...</span>
+        </div>
+        <span id="campaignBadge" class="timer-badge">Ожидание</span>
+      </div>
+
+      <div class="countdown-grid">
+        <div class="time-box">
+          <span id="timerDays">00</span>
+          <label>Дней</label>
+        </div>
+        <div class="time-box">
+          <span id="timerHours">00</span>
+          <label>Часов</label>
+        </div>
+        <div class="time-box">
+          <span id="timerMinutes">00</span>
+          <label>Минут</label>
+        </div>
+        <div class="time-box">
+          <span id="timerSeconds">00</span>
+          <label>Секунд</label>
+        </div>
+      </div>
+
+      <div class="campaign-drops-container">
+        <div class="campaign-drops-title">Скины текущей кампании:</div>
+        <div id="campaignDropsGrid" class="campaign-drops-grid">
+          <p class="no-drops-text">Загрузка скинов кампании...</p>
+        </div>
+      </div>
+    </section>
+
     <div id="authBox" class="auth-box" style="display: none;">
       <p>Для привязки аккаунта перейдите по ссылке и введите код:</p>
       <div id="authCode" class="auth-code">--------</div>
