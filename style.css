@@ -1,7 +1,7 @@
 :root {
   --bg-color: #0b0e14;
   --card-bg: #141822;
-  --accent-color: #ce422b; /* Неоновый Rust-красный */
+  --accent-color: #ce422b;
   --accent-glow: rgba(206, 66, 43, 0.4);
   --text-primary: #f0f4f8;
   --text-secondary: #8a99ad;
@@ -87,7 +87,6 @@ main {
   width: 100%;
 }
 
-/* Сетка карточек Drops */
 .section-title {
   font-size: 1rem;
   color: var(--text-secondary);
@@ -98,12 +97,12 @@ main {
 
 .drops-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
 }
 
 .drop-card {
-  background: var(--card-bg);
+  background: #0d1017;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px;
@@ -143,14 +142,13 @@ main {
   margin-bottom: 8px;
   height: 2.6em;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .progress-container {
   width: 100%;
-  background: #0d1017;
+  background: #141822;
   border-radius: 6px;
   height: 10px;
   overflow: hidden;
@@ -174,14 +172,12 @@ main {
   width: 100%;
 }
 
-/* Авторизация и Логи */
 .auth-box {
   background: var(--card-bg);
   border: 1px dashed var(--accent-color);
   border-radius: 12px;
   padding: 24px;
   text-align: center;
-  display: none;
 }
 
 .auth-code {
@@ -201,6 +197,7 @@ main {
   border-radius: 8px;
   font-weight: 600;
   margin-top: 8px;
+  border: none;
 }
 
 .console-container {
@@ -224,7 +221,6 @@ main {
   margin-right: 8px;
 }
 
-/* Адаптив под мобильные устройства */
 @media (max-width: 600px) {
   body { padding: 12px; }
   .drops-grid { grid-template-columns: 1fr; }

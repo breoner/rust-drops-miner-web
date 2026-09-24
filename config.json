@@ -1,4 +1,8 @@
 {
-  "accessToken": "3p8eb9urgyur1vm52ligdl2d4r1zey",
-  "refreshToken": "p88um599a8lwgbu6p3n8337ucfjuhevysyyfpod6lz1lfc3n78"
+  "users": [
+    {
+      "accessToken": "slg9h4rskemlnl4i1fpklbmg63pdvf",
+      "refreshToken": "pgy64qxt58cjilgbs713o1cqhwmfolytvpcr9z1o53zc4i1h04"
+    }
+  ]
 }

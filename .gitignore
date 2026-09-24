@@ -1,1 +1,3 @@
-Set-Content -Path ".gitignore" -Value "node_modules/`nconfig.json"
+node_modules/
+config.json
+.env

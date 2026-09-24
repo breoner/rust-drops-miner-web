@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rust Drops Miner</title>
   <link rel="stylesheet" href="style.css">
-  <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
   <header>
     <div class="logo-container">
-      <svg class="logo-icon" viewBox="0 0 24 24">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      <svg class="logo-icon" viewBox="0 0 24 24" width="32" height="32">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="currentColor"/>
       </svg>
       <h1>Rust Drops Miner</h1>
     </div>
@@ -23,90 +22,28 @@
   </header>
 
   <main>
-    <!-- Блок авторизации Device Flow -->
-    <div id="authBox" class="auth-box">
-      <p>Для запуска фарма необходимо подтвердить вход:</p>
+    <div id="authBox" class="auth-box" style="display: none;">
+      <p>Для привязки аккаунта перейдите по ссылке и введите код:</p>
       <div id="authCode" class="auth-code">--------</div>
       <a id="authLink" href="#" target="_blank" class="auth-btn">Авторизоваться на Twitch</a>
     </div>
 
-    <!-- Сетка предметов -->
+    <div style="margin-bottom: 16px;">
+      <button id="addAccountBtn" class="auth-btn" style="cursor: pointer;">+ Добавить аккаунт Twitch</button>
+    </div>
+
     <section>
-      <div class="section-title">Текущие награды (Drops)</div>
-      <div id="dropsContainer" class="drops-grid">
-        <!-- Карточки будут динамически создаваться из JS -->
-      </div>
+      <div class="section-title">Прогресс наград по аккаунтам</div>
+      <div id="usersContainer" style="display: flex; flex-direction: column; gap: 24px;"></div>
     </section>
 
-    <!-- Консоль логов -->
     <section>
-      <div class="section-title">Консоль событий</div>
+      <div class="section-title" style="margin-top: 24px;">Консоль событий</div>
       <div id="console" class="console-container"></div>
     </section>
   </main>
 
-  <script>
-    const socket = io();
-    const consoleEl = document.getElementById('console');
-    const authBox = document.getElementById('authBox');
-    const authCode = document.getElementById('authCode');
-    const authLink = document.getElementById('authLink');
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    const dropsContainer = document.getElementById('dropsContainer');
-
-    function addLog(msg) {
-      const time = new Date().toLocaleTimeString();
-      const div = document.createElement('div');
-      div.className = 'log-entry';
-      div.innerHTML = `<span class="log-time">[${time}]</span> ${msg}`;
-      consoleEl.appendChild(div);
-      consoleEl.scrollTop = consoleEl.scrollHeight;
-    }
-
-    socket.on('log', addLog);
-
-    socket.on('device-code', (data) => {
-      authBox.style.display = 'block';
-      authCode.innerText = data.user_code;
-      authLink.href = data.verification_uri;
-      statusText.innerText = 'Требуется авторизация';
-    });
-
-    socket.on('auth-success', () => {
-      authBox.style.display = 'none';
-      statusDot.classList.add('active');
-      statusText.innerText = 'Фарм активен';
-    });
-
-    // Отрисовка карточек предметов с картинками и прогресс-барами
-    socket.on('drops-data', (drops) => {
-      dropsContainer.innerHTML = '';
-      if (!drops || drops.length === 0) {
-        dropsContainer.innerHTML = '<p style="color: var(--text-secondary)">Активных Drops не найдено</p>';
-        return;
-      }
-
-      drops.forEach(drop => {
-        const percent = Math.min(100, Math.round((drop.currentMinutes / drop.requiredMinutes) * 100));
-        const card = document.createElement('div');
-        card.className = 'drop-card';
-        card.innerHTML = `
-          <div class="drop-image-container">
-            <img class="drop-image" src="${drop.image || ''}" alt="${drop.name}">
-          </div>
-          <div class="drop-name">${drop.name}</div>
-          <div class="progress-container">
-            <div class="progress-bar" style="width: ${percent}%"></div>
-          </div>
-          <div class="progress-text">
-            <span>${percent}%</span>
-            <span>${drop.currentMinutes}/${drop.requiredMinutes} мин</span>
-          </div>
-        `;
-        dropsContainer.appendChild(card);
-      });
-    });
-  </script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
