@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rust Drops Miner</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #08080a;
+        color: #e4e4e7;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .app-card {
+        width: 100%;
+        max-width: 680px;
+        background: #111115;
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        padding: 28px;
+        box-shadow:
+          0 0 30px rgba(0, 0, 0, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.02);
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #27272a;
+        padding-bottom: 16px;
+      }
+      .title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .title-icon {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+      }
+      h1 {
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #ffffff;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+      .status-badge {
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: #18181b;
+        border: 1px solid #27272a;
+        color: #a1a1aa;
+        transition: all 0.3s ease;
+      }
+      .device-box {
+        background: #09090b;
+        border: 1px solid #27272a;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: none;
+      }
+      .device-code-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #71717a;
+        margin-bottom: 8px;
+      }
+      .device-code-val {
+        font-size: 28px;
+        font-weight: 700;
+        font-family: monospace;
+        color: #ffffff;
+        letter-spacing: 4px;
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+        margin-bottom: 16px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #ffffff;
+        border-radius: 6px;
+        padding: 10px 18px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+      }
+      .btn:hover {
+        background: #e4e4e7;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      }
+      .btn-secondary {
+        background: #18181b;
+        color: #ffffff;
+        border: 1px solid #27272a;
+        box-shadow: none;
+      }
+      .btn-secondary:hover {
+        border-color: #ffffff;
+        background: #27272a;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+      .input-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      input {
+        flex: 1;
+        background: #09090b;
+        border: 1px solid #27272a;
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: #ffffff;
+        font-size: 13px;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      }
+      .section-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #71717a;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #logs {
+        background: #050507;
+        border: 1px solid #1e1e24;
+        border-radius: 6px;
+        height: 320px;
+        padding: 14px;
+        overflow-y: auto;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #a1a1aa;
+      }
+      .log-item {
+        margin-bottom: 4px;
+        word-break: break-all;
+      }
+      .log-item .time {
+        color: #52525b;
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-card">
+      <div class="header">
+        <div class="title-group">
+          <svg class="title-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+            ></path>
+          </svg>
+          <h1>Rust Drops Miner</h1>
+        </div>
+        <div class="status-badge" id="statusBadge">Standby</div>
+      </div>
+      <div id="deviceBox" class="device-box">
+        <div class="device-code-label">Код авторизации Twitch</div>
+        <div class="device-code-val" id="userCode">----</div>
+        <a id="authLink" href="#" target="_blank" class="btn"
+          ><svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+            ></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line></svg
+          >Авторизоваться</a
+        >
+      </div>
+      <div class="input-group">
+        <input
+          type="text"
+          id="tokenInput"
+          placeholder="Резервный auth-token (опционально)"
+        /><button class="btn btn-secondary" onclick="manualStart()">
+          Сохранить
+        </button>
+      </div>
+      <div class="section-title">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line></svg
+        >Консоль событий
+      </div>
+      <div id="logs">
+        <div class="log-item">
+          <span class="time">[SYSTEM]</span>Инициализация системы...
+        </div>
+      </div>
+    </div>
+    <script>
+      const socket = io();
+      const logsDiv = document.getElementById("logs");
+      const deviceBox = document.getElementById("deviceBox");
+      const userCodeEl = document.getElementById("userCode");
+      const authLinkEl = document.getElementById("authLink");
+      const tokenInput = document.getElementById("tokenInput");
+      const statusBadge = document.getElementById("statusBadge");
+      socket.on("connect", function () {
+        statusBadge.innerText = "Active";
+        statusBadge.style.borderColor = "#ffffff";
+        statusBadge.style.color = "#ffffff";
+        addLog("Подключено к серверу");
+      });
+      socket.on("disconnect", function () {
+        statusBadge.innerText = "Offline";
+        statusBadge.style.borderColor = "#27272a";
+        statusBadge.style.color = "#71717a";
+      });
+      socket.on("device-code", function (data) {
+        deviceBox.style.display = "block";
+        userCodeEl.innerText = data.user_code;
+        authLinkEl.href = data.verification_uri;
+      });
+      socket.on("auth-success", function () {
+        deviceBox.style.display = "none";
+        addLog("Авторизация успешно подтверждена");
+      });
+      socket.on("log", function (e) {
+        addLog(e);
+      });
+      function manualStart() {
+        const val = tokenInput.value.trim();
+        if (!val) return;
+        socket.emit("manual-token", { authToken: val });
+      }
+      function addLog(text) {
+        const item = document.createElement("div");
+        item.className = "log-item";
+        const time = new Date().toLocaleTimeString();
+        item.innerHTML =
+          '<span class="time">[' + time + "]</span>" + escapeHtml(text);
+        logsDiv.appendChild(item);
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+      }
+      function escapeHtml(str) {
+        return str.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+      }
+    </script>
+  </body>
+</html>
